@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ReceiptCat — Scan & Analize</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="cat-logo">🐾</span>
+      <strong>ReceiptCat</strong>
+    </div>
+    <nav>
+      <button id="themeToggle" class="ghost">🌗</button>
+      <button id="logoutBtn" class="ghost">Ieșire</button>
+    </nav>
+  </header>
+
+  <main id="app">
+
+    <!-- Ecran login + pisicuță -->
+    <section id="screen-auth" class="screen active">
+      <div class="cat-wrap">
+        <!-- Pisicuță SVG cu lăbuță care salută -->
+        <svg class="cat" viewBox="0 0 200 200" aria-hidden="true">
+          <circle cx="100" cy="100" r="90" class="cat-bg"/>
+          <circle cx="100" cy="80" r="30" class="cat-head"/>
+          <circle cx="85" cy="75" r="5" class="cat-eye"/>
+          <circle cx="115" cy="75" r="5" class="cat-eye"/>
+          <path d="M 100 85 q 8 8 16 0" class="cat-smile"/>
+          <g class="cat-paw">
+            <circle cx="150" cy="120" r="14" class="paw"/>
+            <circle cx="144" cy="116" r="3" class="toe"/>
+            <circle cx="156" cy="116" r="3" class="toe"/>
+          </g>
+        </svg>
+        <h1>Meow! Bine ai venit!</h1>
+        <p>Pisicuța te salută. Autentifică-te ca să urci un bon 📷 sau un PDF.</p>
+      </div>
+      <form id="form-auth" class="card">
+        <div class="tabs">
+          <button type="button" data-tab="signin" class="active">Intră</button>
+          <button type="button" data-tab="signup">Creează cont</button>
+        </div>
+        <div class="fields">
+          <input id="email" type="email" placeholder="Email" required />
+          <input id="password" type="password" placeholder="Parolă (min 8)" minlength="8" required />
+          <label id="consentRow" class="consent-row">
+            <input id="consent" type="checkbox" />
+            <span>Îmi dau consimțământul pentru prelucrarea bonurilor în scop analitic (v1)</span>
+          </label>
+        </div>
+        <button id="authSubmit" class="primary" type="submit">Continuă</button>
+        <p id="authMsg" class="msg"></p>
+      </form>
+    </section>
+
+    <!-- Ecran încărcare bon + cameră -->
+    <section id="screen-upload" class="screen">
+      <h2>Încarcă bonul</h2>
+      <div class="uploader card">
+        <div class="cam">
+          <video id="video" autoplay playsinline></video>
+          <canvas id="canvas" hidden></canvas>
+          <div class="cam-actions">
+            <button id="startCam" class="ghost">Pornește camera</button>
+            <button id="snap" class="primary">Fă poză</button>
+            <a id="downloadShot" class="ghost" download="receipt.jpg">Descarcă poza</a>
+          </div>
+        </div>
+        <div class="file">
+          <input id="file" type="file" accept="image/*,application/pdf" />
+          <button id="uploadBtn" class="primary">Trimite pentru analiză</button>
+          <p class="muted">Acceptă imagini sau PDF. Calitatea bună = rezultate mai bune.</p>
+          <p id="uploadMsg" class="msg"></p>
+        </div>
+      </div>
+
+      <div class="results card">
+        <h3>Rezultate extrase</h3>
+        <div class="meta">
+          <div><b>Locație:</b> <span id="resStore">-</span></div>
+          <div><b>Total:</b> <span id="resTotal">-</span></div>
+          <div><b>Data:</b> <span id="resDate">-</span></div>
+        </div>
+        <table id="itemsTable">
+          <thead><tr><th>#</th><th>Produs</th><th>Qty</th><th>Preț</th><th>Total</th><th>Categorie</th></tr></thead>
+          <tbody></tbody>
+        </table>
+        <div class="actions">
+          <button id="sendReport" class="ghost">Trimite raport pe email</button>
+          <button id="toAnalytics" class="ghost">Vezi agregări</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Agregări personale -->
+    <section id="screen-analytics" class="screen">
+      <h2>Agregări personale</h2>
+      <div class="grid-2">
+        <div class="card">
+          <h3>Top produse</h3>
+          <table id="byProduct">
+            <thead><tr><th>Produs</th><th>Cantitate</th><th>Suma</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <div class="card">
+          <h3>Top locații</h3>
+          <table id="byStore">
+            <thead><tr><th>Locație</th><th>Bonuri</th><th>Total</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+      <div class="actions">
+        <button id="backToUpload" class="ghost">Înapoi</button>
+      </div>
+    </section>
+
+    <!-- Sondaje -->
+    <section id="screen-surveys" class="screen">
+      <h2>Sondaje</h2>
+      <div id="surveysWrap" class="card"></div>
+    </section>
+
+    <!-- Admin -->
+    <section id="screen-admin" class="screen">
+      <h2>Admin: Agregări globale</h2>
+      <div id="adminStats" class="card"></div>
+      <div class="card">
+        <h3>Creează sondaj</h3>
+        <form id="surveyForm">
+          <input id="svTitle" placeholder="Titlu" required />
+          <textarea id="svDesc" placeholder="Descriere"></textarea>
+          <div id="svQs"></div>
+          <div class="actions">
+            <button type="button" id="addQ">Adaugă întrebare</button>
+            <button class="primary" type="submit">Publică</button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="footer">
+    <small>© <span id="year"></span> ReceiptCat</small>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
